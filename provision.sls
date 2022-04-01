@@ -1,3 +1,5 @@
+{% set USER = "cro" %}
+
 Update Packages:
   pkg.uptodate:
     - refresh: True
@@ -32,7 +34,7 @@ docker:
 
 curl https://pyenv.run | bash:
   cmd.run:
-    - creates: /home/cro/.pyenv
+    - creates: /home/{{ USER }}/.pyenv
 
 Development Tools:
   pkg.group_installed
@@ -50,10 +52,10 @@ neovim-npm:
   npm.installed:
     - name: neovim
 
-cro:
+{{ USER }}:
   user.present:
     - fullname: C. R. Oldham
-    - home: /home/cro
+    - home: /home/{{ USER }}
     - shell: /usr/bin/fish
     - groups:
       - wheel
@@ -62,7 +64,7 @@ cro:
 
 AAAAC3NzaC1lZDI1NTE5AAAAIL76QsHXnukwYpj1PcuLUW/detxKMs3ScBGt8kiDP7pi:
   ssh_auth.present:
-    - user: cro
+    - user: {{ USER }}
     - enc: ssh-ed25519
 
 root:
@@ -92,10 +94,10 @@ prometheus-user:
     - groups:
       - prometheus
 
-/home/cro/.local/provisioner:
+/home/{{ USER }}/.local/provisioner:
   file.directory:
-    - user: cro
-    - group: cro
+    - user: {{ USER }}
+    - group: {{ USER }}
     - dir_mode: 755
     - file_mode: 644
 
@@ -104,11 +106,11 @@ prometheus-user:
     - source: https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh
     - skip_verify: True
 
-bash /tmp/lunarviminstall.sh --no-install-dependencies && touch /home/cro/.local/provisioner/lunarvim.installed:
+bash /tmp/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
   cmd.run:
-    - runas: cro
+    - runas: {{ USER }}
     - creates:
-      - /home/cro/.local/provisioner/lunarvim.installed
+      - /home/{{ USER }}/.local/provisioner/lunarvim.installed
     
 /tmp/zellij.tar.gz:
   file.managed:
@@ -141,10 +143,10 @@ wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
     - creates:
       - /usr/local/bin/k3d
 
-/home/cro/.config:
+/home/{{ USER }}/.config:
   file.recurse:
-    - source: salt://files/.config
-    - user: cro
-    - group: cro
+    - source: salt://wkst/files/.config
+    - user: {{ USER }}
+    - group: {{ USER }}
 
   
