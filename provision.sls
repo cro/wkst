@@ -149,4 +149,14 @@ wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
     - user: {{ USER }}
     - group: {{ USER }}
 
-  
+/etc/ssh/sshd_config.d/acceptenv.conf:
+  file.managed:
+    - source: salt://wkst/files/acceptenv.conf
+    - user: root
+    - group: root
+
+/etc/ssh/ssh_config.d/sendenv.conf:
+  file.managed:
+    - source: salt://wkst/files/sendenv.conf
+    - user: root
+    - group: root
