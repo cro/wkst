@@ -1,4 +1,24 @@
+{% set NAME = "C. R. Oldham" %}
 {% set USER = "cro" %}
+{% set EMAIL = "cro@ncbt.org" %}
+
+# Docker repositories for Fedora and Debian
+{% if grains.get('os') == "Fedora" %}
+dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo:
+  cmd.run:
+    - creates: /etc/yum.repos.d/docker-ce.repo 
+{% endif %}
+{% if grains.get('os')== "Debian" %}
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg:
+  cmd.run:
+    - creates:
+      - /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list:
+  cmd.run:
+    - creates:
+        - /etc/apt/sources.list.d/docker.list
+{% endif %}
 
 Update Packages:
   pkg.uptodate:
@@ -7,19 +27,25 @@ Update Packages:
 Wanted Packages:
   pkg.installed:
     - pkgs:
+        - hub
         - wget
         - neovim
         - fish
         - npm
-        - gcc-c++
         - ripgrep
         - fd-find
         - python3-neovim
+        - keychain
+{% if grains.get('os')== "Fedora" %}
+        - gcc-c++
         - dnf-plugins-core
-
-dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo:
-  cmd.run:
-    - creates: /etc/yum.repos.d/docker-ce.repo 
+{% endif %}
+{% if grains.get('os')== "Debian" %}
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+{% endif %}
 
 Docker:
   pkg.installed:
@@ -35,12 +61,19 @@ docker:
 curl https://pyenv.run | bash:
   cmd.run:
     - creates: /home/{{ USER }}/.pyenv
+    - runas: {{ USER }}
 
+{% if grains.get('os') == "Fedora" %}
 Development Tools:
   pkg.group_installed
 
 Development Libraries:
   pkg.group_installed
+{% endif %}
+{% if grains.get('os') == "Debian" %}
+build-essential:
+  pkg.installed
+{% endif %}
 
 yarn:
   npm.installed
@@ -58,8 +91,13 @@ neovim-npm:
     - home: /home/{{ USER }}
     - shell: /usr/bin/fish
     - groups:
-      - wheel
       - docker
+{% if grains.get('os') == "Debian" %}
+      - sudo
+{% endif %}
+{% if grains.get('os') == "Fedora" %}
+      - wheel
+{% endif %}
     - password: "$6$qRKV9JUz4T7wyWFF$AsI2pgBqs9VOi8DkPKeqi3MIIIVtoxPvn7SnHpVa6f28vk2ZUsNjrmVO.zM1kYO1.x9Cc5dEK/K22YOimvg9r."
 
 AAAAC3NzaC1lZDI1NTE5AAAAIL76QsHXnukwYpj1PcuLUW/detxKMs3ScBGt8kiDP7pi:
@@ -78,10 +116,17 @@ root-ssh-key:
     - enc: ssh-ed25519
 
 /etc/sudoers:
-  file.line:
-    - mode: ensure
-    - content: "%wheel ALL=(ALL) NOPASSWD: ALL"
-    - before: "^## Allows people in group wheel"
+  file.managed:
+{% if grains.get('os') == "Fedora" %}
+    - source: salt://wkst/files/sudoers.debian
+{% endif %}
+{% if grains.get('os') == "Fedora" %}
+    - source: salt://wkst/files/sudoers.fedora
+{% endif %}
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: '0600'
 
 prometheus:
   group.present
@@ -160,3 +205,19 @@ wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
     - source: salt://wkst/files/sendenv.conf
     - user: root
     - group: root
+
+sshd:
+  service.running:
+    - enable: True
+    - reload: True
+    - watch:
+      - file: /etc/ssh/ssh_config.d/sendenv.conf
+      - file: /etc/ssh/sshd_config.d/acceptenv.conf
+
+git config --global user.email {{ EMAIL }}:
+  cmd.run:
+    - runas: {{ USER }}
+
+git config --global user.name "{{ NAME }}":
+  cmd.run:
+    - runas: {{ USER }}
