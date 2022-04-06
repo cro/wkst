@@ -148,10 +148,10 @@ prometheus-user:
 
 /tmp/lunarviminstall.sh:
   file.managed:
-    - source: https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh
+    - source: https://raw.githubusercontent.com/lunarvim/lunarvim/rolling/utils/installer/install.sh
     - skip_verify: True
 
-bash /tmp/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
+LV_BRANCH=rolling bash /tmp/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
   cmd.run:
     - runas: {{ USER }}
     - creates:
