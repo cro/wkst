@@ -159,7 +159,7 @@ LV_BRANCH=rolling bash /tmp/lunarviminstall.sh --no-install-dependencies && touc
     
 /tmp/zellij.tar.gz:
   file.managed:
-    - source: https://github.com/zellij-org/zellij/releases/download/v0.27.0/zellij-x86_64-unknown-linux-musl.tar.gz
+    - source: https://github.com/zellij-org/zellij/releases/download/v0.28.1/zellij-x86_64-unknown-linux-musl.tar.gz
     - skip_verify: True
 
 extract_zellij:
