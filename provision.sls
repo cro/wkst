@@ -42,14 +42,13 @@ Wanted Packages:
         - fd-find
         - python3-neovim
         - keychain
+        - sudo
 {% if grains.get('os')== "Fedora" %}
         - gcc-c++
         - dnf-plugins-core
 {% endif %}
 {% if grains.get('os')== "Debian" %}
         - ca-certificates
-        - curl
-        - gnupg
         - lsb-release
 {% endif %}
 
