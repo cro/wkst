@@ -2,6 +2,12 @@
 {% set USER = "cro" %}
 {% set EMAIL = "cro@ncbt.org" %}
 
+Initial Packages:
+  pkg.installed:
+    - pkgs:
+      - curl
+      - gnupg
+
 # Docker repositories for Fedora and Debian
 {% if grains.get('os') == "Fedora" %}
 dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo:
@@ -118,10 +124,10 @@ root-ssh-key:
 /etc/sudoers:
   file.managed:
 {% if grains.get('os') == "Fedora" %}
-    - source: salt://wkst/files/sudoers.debian
-{% endif %}
-{% if grains.get('os') == "Fedora" %}
     - source: salt://wkst/files/sudoers.fedora
+{% endif %}
+{% if grains.get('os') == "Debian" %}
+    - source: salt://wkst/files/sudoers.debian
 {% endif %}
     - template: jinja
     - user: root
