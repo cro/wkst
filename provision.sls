@@ -1,6 +1,7 @@
 {% set NAME = "C. R. Oldham" %}
 {% set USER = "cro" %}
 {% set EMAIL = "cro@ncbt.org" %}
+{% set HOME = "/home/cro" %}
 
 Initial Packages:
   pkg.installed:
@@ -157,43 +158,41 @@ prometheus-user:
     - source: https://raw.githubusercontent.com/lunarvim/lunarvim/rolling/utils/installer/install.sh
     - skip_verify: True
 
-
 LV_BRANCH=rolling bash /home/{{ USER }}/.local/provisioner/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
   cmd.run:
     - runas: {{ USER }}
-    - creates:
-      - /home/{{ USER }}/.local/provisioner/lunarvim.installed
+    - creates: /home/{{ USER }}/.local/provisioner/lunarvim.group_installed
 
 append-start-zone:
   file.append:
-    - name: $HOME/.config/lvim/config.lua
-    - text: "# START managed zone -DO-NOT-EDIT-" 
+    - name: /home/{{ USER }}/.config/lvim/config.lua
+    - text: "-- START managed zone -DO-NOT-EDIT-" 
 
 append-end-zone:
   file.append:
-    - name: $HOME/.config/lvim/config.lua
-    - text: "# END managed zone  --"
+    - name: {{ HOME }}/.config/lvim/config.lua
+    - text: "-- END managed zone  --"
 
 lunarvim-extra-plugins:
   file.blockreplace:
-    - name: $HOME/.config/lvim/config.lua
-    - marker_start: "# START managed zone -DO-NOT-EDIT-"
-    - marker_end: "# END managed zone  --"
-    - content: |
-        -- Additional Plugins
-        lvim.plugins = {
-        {
-          keys = { "c", "d", "y" }
-          "tpope/vim-surround",
-        {
-        },
-          "folke/trouble.nvim",
-          cmd = "TroubleToggle",
-        },
-      }
+    - marker_start: "-- START managed zone -DO-NOT-EDIT-"
+    - marker_end: "-- END managed zone  --"
+    - name: {{ HOME }}/.config/lvim/config.lua
     - append_if_not_found: True
     - backup: '.bak'
     - show_changes: True
+    - content: |
+          -- Additional Plugins
+          lvim.plugins = {
+            {
+              keys = { "c", "d", "y" },
+              "tpope/vim-surround",
+            },
+            {
+              "folke/trouble.nvim",
+              cmd = "TroubleToggle",
+            },
+          }
     
 /tmp/zellij.tar.gz:
   file.managed:
