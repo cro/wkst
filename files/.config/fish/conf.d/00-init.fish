@@ -6,8 +6,6 @@ set budspencer_colors 000000 333333 666666 ffffff ffff00 ff6600 ff0000 ff0033 33
 set -U budspencer_nogreeting
 set -U budspencer_nobell
 set -xg PIPENV_VENV_IN_PROJECT 1
-# set -xg ARTIFACTORY coldham:AKCp8ii95iYB6CkLfR2GJTeFem4pVPurGECQuiwSQtCXsEXV7EkKirY4Ffex85PWrVHcm6xU5
-# set -xg ARTIFACTORY_URL https://$ARTIFACTORY@artifactory.saltstack.net/artifactory/api/pypi/pypi/simple
 
 # Set PAR options
 # set -xg PARINIT 'rTbgqR B=.,?_A_a Q=_s>|'
