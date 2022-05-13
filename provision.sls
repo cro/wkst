@@ -1,7 +1,7 @@
 {% set NAME = "C. R. Oldham" %}
-{% set USER = "cro" %}
-{% set EMAIL = "cro@ncbt.org" %}
-{% set HOME = "/home/cro" %}
+{% set USER = "coldham" %}
+{% set EMAIL = "coldham@vmware.com" %}
+{% set HOME = "/home/coldham" %}
 
 Initial Packages:
   pkg.installed:
@@ -22,6 +22,17 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/
       - /usr/share/keyrings/docker-archive-keyring.gpg
 
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list:
+  cmd.run:
+    - creates:
+        - /etc/apt/sources.list.d/docker.list
+{% endif %}
+{% if grains.get('os')== "Ubuntu" %}
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg:
+  cmd.run:
+    - creates:
+      - /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list:
   cmd.run:
     - creates:
         - /etc/apt/sources.list.d/docker.list
@@ -49,7 +60,7 @@ Wanted Packages:
         - gcc-c++
         - dnf-plugins-core
 {% endif %}
-{% if grains.get('os')== "Debian" %}
+{% if grains.get('os_family')== "Debian" %}
         - ca-certificates
         - lsb-release
 {% endif %}
@@ -77,7 +88,7 @@ Development Tools:
 Development Libraries:
   pkg.group_installed
 {% endif %}
-{% if grains.get('os') == "Debian" %}
+{% if grains.get('os_family') == "Debian" %}
 build-essential:
   pkg.installed
 {% endif %}
@@ -127,7 +138,7 @@ root-ssh-key:
 {% if grains.get('os') == "Fedora" %}
     - source: salt://wkst/files/sudoers.fedora
 {% endif %}
-{% if grains.get('os') == "Debian" %}
+{% if grains.get('os_family') == "Debian" %}
     - source: salt://wkst/files/sudoers.debian
 {% endif %}
     - template: jinja
@@ -152,6 +163,7 @@ prometheus-user:
     - group: {{ USER }}
     - dir_mode: 755
     - file_mode: 644
+    - makedirs: True
 
 /home/{{ USER }}/.local/provisioner/lunarviminstall.sh:
   file.managed:
