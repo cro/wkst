@@ -270,3 +270,5 @@ git config --global user.email {{ EMAIL }}:
 git config --global user.name "{{ NAME }}":
   cmd.run:
     - runas: {{ USER }}
+
+
