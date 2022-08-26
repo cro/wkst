@@ -1,7 +1,7 @@
-{% set NAME = "C. R. Oldham" %}
-{% set USER = "coldham" %}
-{% set EMAIL = "coldham@vmware.com" %}
-{% set HOME = "/home/coldham" %}
+{% set NAME = pillar.items.get('humanname', 'C. R. Oldham') %}
+{% set USER = pillar.items.get('username', 'cro') %}
+{% set EMAIL = pillar.items.get('email', "cro@ncbt.org") %}
+{% set HOME = pillar.items.get('homedir', "/home/cro") %}
 
 Initial Packages:
   pkg.installed:
