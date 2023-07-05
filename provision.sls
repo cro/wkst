@@ -86,11 +86,6 @@ docker:
   service.running:
     - enable: True
 
-curl https://pyenv.run | bash:
-  cmd.run:
-    - creates: /home/{{ USER }}/.pyenv
-    - runas: {{ USER }}
-
 {% if grains.get('os') == "Fedora" %}
 Development Tools:
   pkg.group_installed
@@ -174,6 +169,12 @@ prometheus-user:
     - dir_mode: 755
     - file_mode: 644
     - makedirs: True
+
+curl -L -o /tmp/nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz:
+  cmd.run
+
+tar --strip-components=1 -C /usr/local -xvf /tmp/nvim.tar.gz:
+  cmd.run
 
 /home/{{ USER }}/.local/provisioner/lunarviminstall.sh:
   file.managed:
