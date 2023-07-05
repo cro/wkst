@@ -42,6 +42,15 @@ Update Packages:
   pkg.uptodate:
     - refresh: True
 
+# rtx repositories
+{% if grains.get('os_family')== "Debian" %}
+deb [signed-by=/etc/apt/keyrings/rtx-archive-keyring.gpg arch=amd64] https://rtx.pub/deb stable main:
+  pkgrepo.managed:
+    - file: /etc/apt/sources.list.d/rtx.list
+    - key_url: https://rtx.pub/gpg-key.pub
+    - aptkey: False    
+{% endif %}
+
 Wanted Packages:
   pkg.installed:
     - pkgs:
@@ -63,6 +72,7 @@ Wanted Packages:
 {% if grains.get('os_family')== "Debian" %}
         - ca-certificates
         - lsb-release
+        - rtx
 {% endif %}
 
 Docker:
