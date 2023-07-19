@@ -181,7 +181,7 @@ tar --strip-components=1 -C /usr/local -xvf /tmp/nvim.tar.gz:
     - source: https://raw.githubusercontent.com/lunarvim/lunarvim/rolling/utils/installer/install.sh
     - skip_verify: True
 
-LV_BRANCH=rolling bash /home/{{ USER }}/.local/provisioner/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
+bash /home/{{ USER }}/.local/provisioner/lunarviminstall.sh --no-install-dependencies && touch /home/{{ USER }}/.local/provisioner/lunarvim.installed:
   cmd.run:
     - runas: {{ USER }}
     - creates: /home/{{ USER }}/.local/provisioner/lunarvim.group_installed
